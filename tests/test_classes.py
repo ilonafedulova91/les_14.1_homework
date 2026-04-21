@@ -1,6 +1,6 @@
 import pytest
 
-from src.classes import Category, Product
+from src.classes import Category, CategoryIterator, Product
 
 
 @pytest.fixture
@@ -44,15 +44,43 @@ def test_add_product(categories):
 
     categories.add_product(new_product)
 
-    assert "product_3" in categories.products
+    assert "product_3" in categories.products_str
 
 
 def test_products_str(categories):
-    result = categories.products
+    result = categories.products_str
 
     assert isinstance(result, str)
     assert "product_1" in result
     assert "100" in result
+
+
+def test_product__str__():
+    product = Product("product_1", "description_1", 100, 5)
+    assert str(product) == "product_1, 100 руб. Остаток: 5 шт."
+
+
+def test_category__str__(categories):
+    result = str(categories)
+    assert isinstance(result, str)
+    assert "category_1" in result
+    assert "15" in result
+
+
+def test_product__add__():
+    product_1 = Product("product_1", "description_1", 100, 5)
+    product_2 = Product("product_2", "description_2", 500, 10)
+
+    assert product_1 + product_2 == 5500
+
+
+def test_category_iterator(categories):
+    iterator = CategoryIterator(categories)
+
+    products = list(iterator)
+
+    assert len(products) == 2
+    assert isinstance(products[0], Product)
 
 
 def test_new_product():
