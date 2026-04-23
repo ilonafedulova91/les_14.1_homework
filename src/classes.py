@@ -24,6 +24,14 @@ class Product:
 
         self.__price = new_price
 
+    def __str__(self):
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other):
+        if not isinstance(other, Product):
+            return NotImplemented
+        return self.price * self.quantity + other.price * other.quantity
+
     @classmethod
     def new_product(cls, data: dict, products: list = None):
         name = data["name"]
@@ -64,7 +72,33 @@ class Category:
 
     @property
     def products(self):
+        return self.__products
+
+    @property
+    def products_str(self):
         result = ""
         for product in self.__products:
             result += f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт.\n"
         return result
+
+    def __str__(self):
+        total_amount = sum(product.quantity for product in self.__products)
+        return f"{self.name}, количество продуктов: {total_amount} шт."
+
+
+class CategoryIterator:
+    """This class represents a category iterator"""
+
+    def __init__(self, category: Category):
+        self.__products = category.products
+        self.__index = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.__index < len(self.__products):
+            result = self.__products[self.__index]
+            self.__index += 1
+            return result
+        raise StopIteration
