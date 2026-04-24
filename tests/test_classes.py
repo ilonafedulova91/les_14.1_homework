@@ -1,6 +1,6 @@
 import pytest
 
-from src.classes import Category, CategoryIterator, Product
+from src.classes import Category, CategoryIterator, LawnGrass, Product, Smartphone
 
 
 @pytest.fixture
@@ -128,3 +128,41 @@ def test_price_setter_negative():
     product.price = -100
 
     assert product.price == 100
+
+
+def test_smartphone_creation():
+    phone = Smartphone("phone_1", "description_1", 100, 5, 90.0, "model_1", 128, "black")
+
+    assert isinstance(phone, Smartphone)
+    assert isinstance(phone, Product)
+    assert phone.name == "phone_1"
+    assert phone.price == 100
+
+
+def test_lawngrass_creation():
+    grass = LawnGrass("grass_1", "description_1", 100, 5, "Greece", "10 days", "green")
+
+    assert isinstance(grass, LawnGrass)
+    assert isinstance(grass, Product)
+    assert grass.country == "Greece"
+    assert grass.quantity == 5
+
+
+def test_add_same_type():
+    phone_1 = Smartphone("phone_1", "description_1", 100, 5, 90.0, "model_1", 128, "black")
+    phone_2 = Smartphone("phone_2", "description_2", 500, 25, 99.0, "model_2", 256, "white")
+
+    assert phone_1 + phone_2 == 100 * 5 + 500 * 25
+
+
+def test_add_different_type():
+    phone_1 = Smartphone("phone_1", "description_1", 100, 5, 90.0, "model_1", 128, "black")
+    grass_1 = LawnGrass("grass_1", "description_1", 100, 5, "Greece", "10 days", "green")
+
+    with pytest.raises(TypeError):
+        _ = phone_1 + grass_1
+
+
+def test_add_wrong_type_product():
+    with pytest.raises(TypeError):
+        Category.add_product("string")
