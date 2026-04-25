@@ -30,6 +30,51 @@
 
 ---
 
+## Абстрактный класс BaseClass
+
+```python
+class BaseClass(ABC)
+```
+
+Базовый абстрактный класс для всех товаров.
+
+### Обязательные методы
+
+Каждый продукт обязан реализовать:
+
+```python
+@abstractmethod
+def __str__(self)
+```
+
+Строковое представление товара.
+
+## Миксин ReprMixin
+
+```python
+class ReprMixin
+```
+
+Добавляет дополнительное поведение при создании объекта.
+
+### Возможности
+
+* *Логирование создания объекта*
+
+При создании объекта выводится сообщение:
+
+`Был создан объект Product с параметрами: (...)`
+
+* *Метод repr*
+
+```python
+def __repr__(self)
+```
+
+Возвращает техническое представление объекта:
+
+`Product({'name': '...', 'price': ...})`
+
 ## Класс Product
 
 ### Описание
@@ -62,6 +107,10 @@ product = Product("iPhone 15", "512GB", 210000.0, 8)
 - `country: str` — страна
 - `germination_period: str` — срок прорастания
 - `color: str` — цвет
+
+## Наследование
+
+`BaseClass → Product → Smartphone / LawnGrass`
 
 ## Класс Category
 
@@ -96,6 +145,19 @@ category = Category("Смартфоны", "Описание", [product1, product
 for product in CategoryIterator(category):
     print(product)
 ```
+
+## Класс Order
+
+```python
+class Order(BaseClass)
+```
+
+Описывает покупку одного товара.
+
+### Атрибуты
+- `product` - товар
+- `quantity` - количество
+-  `total_price` - итоговая стоимость
 
 ## Загрузка данных из JSON
 

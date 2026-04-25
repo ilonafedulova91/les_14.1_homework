@@ -1,6 +1,6 @@
 import pytest
 
-from src.classes import Category, CategoryIterator, LawnGrass, Product, Smartphone
+from src.classes import BaseClass, Category, CategoryIterator, LawnGrass, Order, Product, Smartphone
 
 
 @pytest.fixture
@@ -166,3 +166,27 @@ def test_add_different_type():
 def test_add_wrong_type_product():
     with pytest.raises(TypeError):
         Category.add_product("string")
+
+
+def test_base_product_abstract():
+    with pytest.raises(TypeError):
+        BaseClass()
+
+
+def test_mixin_output(capsys):
+    Product("product_1", "description_1", 100, 5)
+    captured = capsys.readouterr()
+    assert "Был создан объект Product с параметрами:" in captured.out
+
+
+def test_order_creation():
+    product_1 = Product("product_1", "description_1", 100, 5)
+    order = Order(product_1, 2)
+
+    assert order.total_price == 200
+    assert "Заказ" in str(order)
+
+
+def test_order_invalid():
+    with pytest.raises(TypeError):
+        Order("not product", 1)
