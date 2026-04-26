@@ -1,4 +1,26 @@
-class Product:
+from abc import ABC, abstractmethod
+
+
+class BaseClass(ABC):
+    """The abstract base class"""
+
+    @abstractmethod
+    def __str__(self):
+        pass
+
+
+class ReprMixin:
+    """A mixin that provides __repr__ method"""
+
+    def __init__(self, *args, **kwargs):
+        print(f"Был создан объект {self.__class__.__name__} с параметрами: {args}, {kwargs}")
+        super().__init__()
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.__dict__})"
+
+
+class Product(ReprMixin, BaseClass):
     """This class represents a product"""
 
     def __init__(self, name: str, description: str, price: float, quantity: int):
@@ -6,6 +28,7 @@ class Product:
         self.description = description
         self.__price = price
         self.quantity = quantity
+        super().__init__(name, description, price, quantity)
 
     @property
     def price(self):
@@ -52,7 +75,7 @@ class Product:
         return cls(name, description, price, quantity)
 
 
-class Category:
+class Category(BaseClass):
     """This class represents a category"""
 
     category_count = 0
@@ -142,3 +165,18 @@ class LawnGrass(Product):
         self.country = country
         self.germination_period = germination_period
         self.color = color
+
+
+class Order(BaseClass):
+    """This class represents an order"""
+
+    def __init__(self, product: Product, quantity: int):
+        if not isinstance(product, Product):
+            raise TypeError("В заказ можно передать только Product")
+
+        self.product = product
+        self.quantity = quantity
+        self.total_price = product.price * quantity
+
+    def __str__(self):
+        return f"Заказ: {self.product.name}, {self.quantity} шт. на сумму {self.total_price} руб."
