@@ -1,6 +1,6 @@
 import pytest
 
-from src.classes import BaseClass, Category, CategoryIterator, LawnGrass, Order, Product, Smartphone
+from src.classes import BaseProduct, Category, CategoryIterator, LawnGrass, Order, Product, Smartphone
 
 
 @pytest.fixture
@@ -170,7 +170,7 @@ def test_add_wrong_type_product():
 
 def test_base_product_abstract():
     with pytest.raises(TypeError):
-        BaseClass()
+        BaseProduct()
 
 
 def test_mixin_output(capsys):
@@ -190,3 +190,41 @@ def test_order_creation():
 def test_order_invalid():
     with pytest.raises(TypeError):
         Order("not product", 1)
+
+
+def test_product_zero_quantity():
+    with pytest.raises(ValueError):
+        Product("product_0", "description_0", 0, 0)
+
+
+def test_middle_price(categories):
+    result = categories.middle_price()
+    assert result == 300
+
+
+def test_middle_price_empty():
+    category = Category("category_1", "description_1", [])
+    assert category.middle_price() == 0
+
+
+def test_add_zero_quantity_product(capsys):
+    category = Category("category_1", "description_1", [])
+
+    product_1 = Product("product_1", "description_1", 100, 5)
+    product_1.quantity = 0
+
+    category.add_product(product_1)
+    captured = capsys.readouterr()
+    assert "нулевым количеством" in captured.out
+    assert "Обработка добавления товара завершена" in captured.out
+
+
+def test_add_product_success(capsys):
+    category = Category("category_1", "description_1", [])
+    product_1 = Product("product_1", "description_1", 100, 5)
+
+    category.add_product(product_1)
+
+    captured = capsys.readouterr()
+
+    assert "Товар успешно добавлен" in captured.out

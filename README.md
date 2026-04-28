@@ -30,7 +30,7 @@
 
 ---
 
-## Абстрактный класс BaseClass
+## Абстрактный класс BaseProduct
 
 ```python
 class BaseClass(ABC)
@@ -88,6 +88,14 @@ def __repr__(self)
 - `price: float` — цена товара  
 - `quantity: int` — количество на складе  
 
+### Валидация товара (Product): Запрет на создание товара с нулевым количеством
+
+Теперь при создании товара с количеством `0` выбрасывается исключение:
+
+```python
+raise ValueError("Товар с нулевым количеством не может быть добавлен")
+```
+
 ### Пример использования
 
 ```python
@@ -129,6 +137,14 @@ product = Product("iPhone 15", "512GB", 210000.0, 8)
 - `category_count: int` - общее количество категорий
 - `product_count: int` - общее количество товаров
 
+## Методы класса
+- Метод `middle_price()`
+```python
+def middle_price(self)
+```
+* считает среднюю цену всех товаров в категории
+* использует try / except для обработки ошибок
+
 ### Особенности
 - При создании новой категории:
     - увеличивается `category_count`
@@ -149,7 +165,7 @@ for product in CategoryIterator(category):
 ## Класс Order
 
 ```python
-class Order(BaseClass)
+class Order(BaseProduct)
 ```
 
 Описывает покупку одного товара.
@@ -158,6 +174,14 @@ class Order(BaseClass)
 - `product` - товар
 - `quantity` - количество
 -  `total_price` - итоговая стоимость
+
+## Пользовательское исключение `ZeroQuantityError`
+
+```python
+class ZeroQuantityError(Exception)
+```
+
+Обрабатывает ситуацию, когда в категорию или в заказ пытаются добавить товар с нулевым количеством
 
 ## Загрузка данных из JSON
 
