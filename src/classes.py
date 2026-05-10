@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class BaseClass(ABC):
+class BaseProduct(ABC):
     """The abstract base class"""
 
     @abstractmethod
@@ -20,10 +20,13 @@ class ReprMixin:
         return f"{self.__class__.__name__}({self.__dict__})"
 
 
-class Product(ReprMixin, BaseClass):
+class Product(ReprMixin, BaseProduct):
     """This class represents a product"""
 
     def __init__(self, name: str, description: str, price: float, quantity: int):
+        if quantity == 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
+
         self.name = name
         self.description = description
         self.__price = price
@@ -75,7 +78,7 @@ class Product(ReprMixin, BaseClass):
         return cls(name, description, price, quantity)
 
 
-class Category(BaseClass):
+class Category(BaseProduct):
     """This class represents a category"""
 
     category_count = 0
@@ -90,11 +93,24 @@ class Category(BaseClass):
         Category.product_count += len(products)
 
     def add_product(self, product: Product):
-        if not isinstance(product, Product):
-            raise TypeError("Можно добавлять только продукты")
+        try:
+            if not isinstance(product, Product):
+                raise TypeError("Можно добавлять только продукты")
+            if product.quantity == 0:
+                raise ZeroQuantityError("Нельзя добавить товар с нулевым количеством")
 
-        self.__products.append(product)
-        Category.product_count += 1
+        except ZeroQuantityError as e:
+            print(e)
+
+        except TypeError as e:
+            print(e)
+
+        else:
+            self.__products.append(product)
+            Category.product_count += 1
+            print("Товар успешно добавлен")
+        finally:
+            print("Обработка добавления товара завершена")
 
     @property
     def products(self):
@@ -110,6 +126,12 @@ class Category(BaseClass):
     def __str__(self):
         total_amount = sum(product.quantity for product in self.__products)
         return f"{self.name}, количество продуктов: {total_amount} шт."
+
+    def middle_price(self):
+        try:
+            return sum(product.price for product in self.__products) / len(self.__products)
+        except ZeroDivisionError:
+            return 0
 
 
 class CategoryIterator:
@@ -167,16 +189,32 @@ class LawnGrass(Product):
         self.color = color
 
 
-class Order(BaseClass):
+class Order(BaseProduct):
     """This class represents an order"""
 
     def __init__(self, product: Product, quantity: int):
-        if not isinstance(product, Product):
-            raise TypeError("В заказ можно передать только Product")
+        try:
+            if not isinstance(product, Product):
+                raise TypeError("В заказ можно передать только Product")
+            if product.quantity == 0:
+                raise ZeroQuantityError("Нельзя создать заказ с нулевым товаром")
 
-        self.product = product
-        self.quantity = quantity
-        self.total_price = product.price * quantity
+        except Exception as e:
+            print(e)
+            raise
+
+        else:
+            self.product = product
+            self.quantity = quantity
+            self.total_price = product.price * quantity
+        finally:
+            print("Обработка создания заказа завершена")
 
     def __str__(self):
         return f"Заказ: {self.product.name}, {self.quantity} шт. на сумму {self.total_price} руб."
+
+
+class ZeroQuantityError(Exception):
+    """This class represents a zero quantity error"""
+
+    pass
